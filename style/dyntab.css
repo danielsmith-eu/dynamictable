@@ -1,0 +1,97 @@
+/*
+Copyright (c) 2012, Dr. Daniel Alexander Smith
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+
+.dyntab_table {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #eee;
+    width: 600px;
+    margin: 0 auto;
+
+    font-family: "Helvetica", "Arial", sans-serif;
+}
+
+.dyntab_container {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.dyntab_header {
+    background-image: url(img/gradient.gif);
+    background-repeat-x: repeat;
+    background-repeat-y: no-repeat;
+    background-position: bottom;
+    font-weight: bold;
+    background-color: #fff;
+}
+
+.dyntab_row {
+    padding: 0px;
+    margin: 0px;
+    border-top: 1px solid #ddd;
+}
+
+.dyntab_header > .dyntab_cell {
+    padding: 5px;
+}
+
+.dyntab_cell {
+    float: left;
+    margin: 0px;
+    padding: 0px;
+}
+
+.dyntab_odd {
+    background-color: #eee;
+}
+
+.dyntab_even {
+    background-color: #fff;
+}
+
+.dyntab_innercell {
+    padding: 5px;
+}
+
+.dyntab_clear {
+    clear: both;
+}
+
+.dyntab_column0 {
+    text-align: left;
+}
+
+.dyntab_column1 {
+    text-align: center;
+}
+
+.dyntab_column2 {
+    text-align: right;
+}
+
+.dyntab_row > .dyntab_cell {
+    text-align: center;
+}
+
+.dyntab_header > .dyntab_cell {
+    text-align: center;
+}
+
+.dyntab_header > .dyntab_cell {
+/*    border-left: 1px solid #ddd;
+*/
+}
+
+.dyntab_header > .dyntab_column0 {
+    border-left: 0px;
+}
