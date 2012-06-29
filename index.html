@@ -30,14 +30,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
                         "http://xmlns.com/foaf/0.1/name": "Electronic Max",
                         "http://xmlns.com/foaf/0.1/phone": "+44 2380 595 000",
                     },
+                    "http://id.ecs.soton.ac.uk/person/2686": {
+                        "http://xmlns.com/foaf/0.1/name": "Professor Nigel Shadbolt FBCS FREng",
+                        "http://xmlns.com/foaf/0.1/phone": "+44 (0)23 8059 7682",
+                        "http://xmlns.com/foaf/0.1/interest": "AI",
+                    },
                 };
 
                 var dt = new DynamicTable($("#table_demo"),
-                    { "columns": {
-                          "http://xmlns.com/foaf/0.1/name": "Name",
-                          "http://xmlns.com/foaf/0.1/interest": "Interests",
-                          "http://xmlns.com/foaf/0.1/phone": "Telephone Number",
-                        },
+                    { "columns": [
+                          {"uri": "http://xmlns.com/foaf/0.1/name", "label": "Name"},
+                          {"uri": "http://xmlns.com/foaf/0.1/interest", "label": "Interests"},
+                          {"uri": "http://xmlns.com/foaf/0.1/phone", "label": "Telephone Number"},
+                        ],
                       "data": data,
                     }
                 );

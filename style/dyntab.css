@@ -39,6 +39,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     padding: 0px;
     margin: 0px;
     border-top: 1px solid #ddd;
+    position: relative;
 }
 
 .dyntab_header > .dyntab_cell {
@@ -49,6 +50,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     float: left;
     margin: 0px;
     padding: 0px;
+    overflow: hidden;
+}
+
+.dyntab_sizer {
+    float: left;
+    margin: 0px;
+    padding: 0px;
+    width: 5px;
+    min-width: 5px;
+    background-color: #ddd;
+    position: inherit;
+    height: 10px;
+    min-height: 10px;
+    cursor: col-resize;
 }
 
 .dyntab_odd {

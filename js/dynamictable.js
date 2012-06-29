@@ -23,20 +23,111 @@ var DynamicTable = function(surface, data){
     dt.data = {};
     dt.row_divs_by_uri = {};
 
+    dt.next_css_class = 1;
+    dt.uri_to_css_class = {};
+
     dt.class_prefix = "dyntab_"; // TODO allow customisable
 
     dt.render(); // render basic table
     dt.add_data(data.data); // add data and save into object
+    dt.add_resizers(); // add the column resizers
 };
 
 DynamicTable.prototype = {
+    uri_to_cssclass: function(uri){
+        var dt = this;
+        var prefix = "uri_"; // TODO allow customisable, move to object?
+        if (uri in dt.uri_to_css_class){
+            return prefix+dt.uri_to_css_class[uri];
+        }
+
+        var this_css_class = dt.next_css_class;
+        dt.next_css_class++;
+
+        dt.uri_to_css_class[uri] = this_css_class;
+        return prefix+this_css_class;
+    },
+    add_resizers: function(){
+        // do this after all columns have been rendered
+        var dt = this;
+
+        var prevColumn = null;
+
+        $.each(dt.columns, function(){
+            if (prevColumn == null){
+                prevColumn = this;
+                return;
+            }
+
+            var column = this;
+            var thisCssclass = "."+dt.class_prefix+dt.uri_to_cssclass(column['uri']);
+            var prevCssclass = "."+dt.class_prefix+dt.uri_to_cssclass(prevColumn['uri']);
+            $(prevCssclass).each(function(){
+                var cell = $(this);
+                var sizer = dt.makediv(["sizer"]);
+                sizer.insertAfter(cell);
+
+                var sizer_width = sizer.width();
+                cell.css("width", cell.width() - sizer_width);
+
+                // FIXME duped below
+                var row_height = sizer.parent().height();
+                sizer.css("height", row_height);
+                sizer.css("min-height", row_height);
+
+                // TODO add draggable/resize operation
+                var mouseDown = false;
+                var origX = 0;
+                var origY = 0;
+                sizer.mousedown(function(evt){
+                    origX = evt.clientX;
+                    origY = evt.clientY;
+
+                    $(prevCssclass).each(function(){
+                        $(this).data("origWidth", $(this).width());
+                    });
+                    $(thisCssclass).each(function(){
+                        $(this).data("origWidth", $(this).width());
+                    });
+
+                    mouseDown = true;
+                });
+                $(document).mouseup(function(evt){
+                    mouseDown = false;
+                });
+                $(document).mousemove(function(evt){
+                    if (mouseDown){
+                        var xDiff = evt.clientX - origX;
+                        var yDiff = evt.clientY - origY;
+                        
+                        $(prevCssclass).each(function(){
+                            $(this).css("width", $(this).data("origWidth") + xDiff); // more wider
+                        });
+                        $(thisCssclass).each(function(){
+                            $(this).css("width", $(this).data("origWidth") - xDiff); // less wide
+                        });
+                        // ensure sizers are the right height now
+                        $("."+dt.class_prefix+"sizer").each(function(){
+                            // FIXME duped above 
+                            var row_height = $(this).parent().height();
+                            $(this).css("height", row_height);
+                            $(this).css("min-height", row_height);
+                        });
+                    }
+                });
+            });
+            prevColumn = this;
+        });
+
+    },
     get_column_uris: function(){
         var dt = this;
 
         // TODO cache this
         var column_uris = [];
-        $.each(dt.columns, function(uri, label){
-            column_uris.push(uri);
+        $.each(dt.columns, function(){
+            var column = this;
+            column_uris.push(column['uri']);
         });
         return column_uris;
     },
@@ -114,9 +205,10 @@ DynamicTable.prototype = {
         var row_cell_width = Math.floor( (row_div.width()) / dt.get_column_uris().length);
 
         col_counter = 0;
-        $.each(dt.columns, function(uri, label){
+        $.each(dt.columns, function(){
+            var column = this;
 
-            var cell = dt.makediv(["cell","column"+col_counter]);
+            var cell = dt.makediv(["cell","column"+col_counter,dt.uri_to_cssclass(column['uri'])]);
             cell.css("width", row_cell_width);
             row_div.append(cell);
 
@@ -158,15 +250,16 @@ DynamicTable.prototype = {
 
         // add header row
         var col_counter = 0;
-        $.each(dt.columns, function(uri, label){
-            label = ""+label;
+        $.each(dt.columns, function(){
+            var column = this;
+            column['label'] = ""+column['label'];
 
-            var header_cell = dt.makediv(["cell","column"+col_counter]);
+            var header_cell = dt.makediv(["cell","column"+col_counter,dt.uri_to_cssclass(column['uri'])]);
             header_cell.css("width", header_cell_width);
             dt.header.append(header_cell);
 
             header_cell.css("width", header_cell.width() - dt.get_extras(header_cell)); // resize once visible
-            header_cell.html(label);
+            header_cell.html(column['label']);
             ++col_counter;
         });
         // clear at each
