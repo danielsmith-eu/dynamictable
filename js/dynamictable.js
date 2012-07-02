@@ -101,8 +101,8 @@ DynamicTable.prototype = {
                         var xDiff = evt.clientX - origX;
                         var yDiff = evt.clientY - origY;
                        
+                        // check for minimum width
                         var minWidth = null;
-
                         $(prevCssclass).each(function(){
                             var newWidth = $(this).data("origWidth") + xDiff;
                             if (minWidth == null || newWidth < minWidth){
@@ -115,9 +115,9 @@ DynamicTable.prototype = {
                                 minWidth = newWidth;
                             }
                         });
-
                         if (minWidth >= dt.min_col_width){
-
+                            // if we won't make a column less than the minimum
+                        
                             $(prevCssclass).each(function(){
                                 $(this).css("width", $(this).data("origWidth") + xDiff); // more wider
                             });
@@ -223,10 +223,10 @@ DynamicTable.prototype = {
         var dt = this;
 
         // add whole new row (uri does not have a uri)
-        var oddeven_class = (dt.container.children().length % 2 == 0 ? "even" : "odd");
+        var oddeven_class = (dt.row_container.children().length % 2 == 0 ? "even" : "odd");
 
         var row_div = dt.makediv(["row", oddeven_class]);
-        dt.container.append(row_div);
+        dt.row_container.append(row_div);
         dt.row_divs_by_uri[uri]  = [row_div];
 
         var row_cell_width = Math.floor( (row_div.width()) / dt.get_column_uris().length);
@@ -246,7 +246,6 @@ DynamicTable.prototype = {
 
         // clear at each
         row_div.append(dt.makediv(["clear"]));
-//        dt.container.append(dt.makediv(["clear"]));
     },
     add_data: function(data){
         var dt = this;
@@ -273,6 +272,11 @@ DynamicTable.prototype = {
         dt.header = dt.makediv(["header"]);
         dt.container.append(dt.header);
 
+        // create a row container
+        dt.row_container = dt.makediv(["row_container"]);
+        dt.container.append(dt.row_container);
+
+
         var header_cell_width = Math.floor( (dt.header.width()) / dt.get_column_uris().length);
 
         // add header row
@@ -291,7 +295,6 @@ DynamicTable.prototype = {
         });
         // clear at each
         dt.header.append(dt.makediv(["clear"]));
-//        dt.container.append(dt.makediv(["clear"]));
     }
 };
 

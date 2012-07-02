@@ -35,6 +35,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     background-color: #fff;
 }
 
+.dyntab_row_container {
+/*    overflow-y: auto;
+    max-height: 100px;
+    */
+}
+
+
 .dyntab_row {
     padding: 0px;
     margin: 0px;
