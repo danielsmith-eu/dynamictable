@@ -27,6 +27,7 @@ var DynamicTable = function(surface, data){
     dt.uri_to_css_class = {};
 
     dt.class_prefix = "dyntab_"; // TODO allow customisable
+    dt.min_col_width = 50; // TODO allow customisable
 
     dt.render(); // render basic table
     dt.add_data(data.data); // add data and save into object
@@ -109,9 +110,16 @@ DynamicTable.prototype = {
                         // ensure sizers are the right height now
                         $("."+dt.class_prefix+"sizer").each(function(){
                             // FIXME duped above 
-                            var row_height = $(this).parent().height();
-                            $(this).css("height", row_height);
-                            $(this).css("min-height", row_height);
+                            var highest = 0;
+                            $(this).parent().find("."+dt.class_prefix+"cell").each(function(){
+                                var thisheight = $(this).height() + dt.get_extras(this);
+                                if (thisheight > highest){
+                                    highest = thisheight;
+                                }
+                            });
+
+                            $(this).css("height", highest);
+                            $(this).css("min-height", highest);
                         });
                     }
                 });
