@@ -100,13 +100,32 @@ DynamicTable.prototype = {
                     if (mouseDown){
                         var xDiff = evt.clientX - origX;
                         var yDiff = evt.clientY - origY;
-                        
+                       
+                        var minWidth = null;
+
                         $(prevCssclass).each(function(){
-                            $(this).css("width", $(this).data("origWidth") + xDiff); // more wider
+                            var newWidth = $(this).data("origWidth") + xDiff;
+                            if (minWidth == null || newWidth < minWidth){
+                                minWidth = newWidth;
+                            }
                         });
                         $(thisCssclass).each(function(){
-                            $(this).css("width", $(this).data("origWidth") - xDiff); // less wide
+                            var newWidth = $(this).data("origWidth") - xDiff;
+                            if (minWidth == null || newWidth < minWidth){
+                                minWidth = newWidth;
+                            }
                         });
+
+                        if (minWidth >= dt.min_col_width){
+
+                            $(prevCssclass).each(function(){
+                                $(this).css("width", $(this).data("origWidth") + xDiff); // more wider
+                            });
+                            $(thisCssclass).each(function(){
+                                $(this).css("width", $(this).data("origWidth") - xDiff); // less wide
+                            });
+                        }
+
                         // ensure sizers are the right height now
                         $("."+dt.class_prefix+"sizer").each(function(){
                             // FIXME duped above 
