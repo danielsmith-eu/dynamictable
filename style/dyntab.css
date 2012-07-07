@@ -40,6 +40,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     background-position: bottom;
     font-weight: bold;
     background-color: #fff;
+    border-bottom: 1px solid #ddd;
 }
 
 .dyntab_row_container {
@@ -52,7 +53,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 .dyntab_row {
     padding: 0px;
     margin: 0px;
-    border-top: 1px solid #ddd;
+    /*border-top: 1px solid #ddd;
+*/
     position: relative;
 }
 
