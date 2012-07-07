@@ -196,31 +196,20 @@ DynamicTable.prototype = {
                                 minWidth = newWidth;
                             }
                         });
+
                         if (minWidth >= dt.min_col_width){
                             // if we won't make a column less than the minimum
                         
                             $(prevCssclass).each(function(){
                                 $(this).css("width", $(this).data("origWidth") + xDiff); // more wider
                             });
+                            // TODO make this so that all cells to the right move right, rather than just the neighbouring getting smaller
                             $(thisCssclass).each(function(){
                                 $(this).css("width", $(this).data("origWidth") - xDiff); // less wide
                             });
                         }
 
-                        // ensure sizers are the right height now
-                        $("."+dt.cls("sizer")).each(function(){
-                            // FIXME duped above 
-                            var highest = 0;
-                            $(this).parent().find("."+dt.cls("cell")).each(function(){
-                                var thisheight = $(this).height() + dt.get_extras(this);
-                                if (thisheight > highest){
-                                    highest = thisheight;
-                                }
-                            });
-
-                            $(this).css("height", highest);
-                            $(this).css("min-height", highest);
-                        });
+                        dt.ensure_div_sizing();
                     }
                 });
             });
@@ -228,6 +217,25 @@ DynamicTable.prototype = {
             prevColumn = column;
         });
 
+    },
+    ensure_div_sizing: function(){
+        var dt = this;
+        // we've added something or moved something, so now make sure that height/weight/pos of everything is correct
+
+        // ensure sizers are the right height now
+        $("."+dt.cls("sizer")).each(function(){
+            // FIXME duped above 
+            var highest = 0;
+            $(this).parent().find("."+dt.cls("cell")).each(function(){
+                var thisheight = $(this).height() + dt.get_extras(this);
+                if (thisheight > highest){
+                    highest = thisheight;
+                }
+            });
+
+            $(this).css("height", highest);
+            $(this).css("min-height", highest);
+        });
     },
     get_column_uris: function(){
         var dt = this;
@@ -290,6 +298,9 @@ DynamicTable.prototype = {
                         dt.data[rowuri][property_uri].push(value);
 
                         var innercell = dt.makediv(["innercell"]);
+                        if (cell.html() == "&nbsp;"){
+                            cell.html("");
+                        }
                         cell.append(innercell);
                         innercell.html(value);
                     }
@@ -305,6 +316,7 @@ DynamicTable.prototype = {
 
             ++column_counter;
         });
+        dt.ensure_div_sizing();
     },
     add_new_row: function(uri){
         var dt = this;
