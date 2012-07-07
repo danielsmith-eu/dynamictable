@@ -280,7 +280,7 @@ DynamicTable.prototype = {
             var cell = $(this);
             var property_uri = dt.get_column_uris()[column_counter];
 
-            if (property_uri in rows){
+            if (property_uri in rows && rows[property_uri] !== undefined){
                 var rowdata = rows[property_uri];
 
                 if (!(property_uri in dt.data[rowuri])){
@@ -355,6 +355,9 @@ DynamicTable.prototype = {
         var character = "#";
         if (uri.indexOf("#") == -1){
             character = "/";
+            if (uri.indexOf("/") == -1){
+                character = ":";
+            }
         }
         return uri.substr( uri.lastIndexOf(character)+1 );
     },
