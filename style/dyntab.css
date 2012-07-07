@@ -23,7 +23,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     overflow: auto;
     width: 600px;
     max-width: 600px;
-    max-height: 300px;
+/*    max-height: 300px;
+*/
 }
 
 .dyntab_container {
@@ -44,9 +45,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 }
 
 .dyntab_row_container {
-/*    overflow-y: auto;
-    max-height: 100px;
-    */
+    overflow-y: auto;
+    max-height: 50px;
+    
 }
 
 
