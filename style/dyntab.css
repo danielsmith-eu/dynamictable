@@ -12,18 +12,25 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 .dyntab_table {
     border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #eee;
+/*    border-radius: 5px;
+*/
     width: 600px;
     margin: 0 auto;
 
-    font-family: "Helvetica", "Arial", sans-serif;
+    font-family: "Lucida Grande", "Helvetica", "Arial", sans-serif;
+    font-size: 8pt;
+
+    overflow: auto;
+    width: 600px;
+    max-width: 600px;
+    max-height: 300px;
 }
 
 .dyntab_container {
     border: 0px;
     padding: 0px;
     margin: 0px;
+
 }
 
 .dyntab_header {
@@ -64,8 +71,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
     float: left;
     margin: 0px;
     padding: 0px;
-    width: 5px;
-    min-width: 5px;
+    width: 2px;
+    min-width: 2px;
     background-color: #ddd;
     position: inherit;
     height: 10px;
@@ -74,7 +81,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 }
 
 .dyntab_odd {
-    background-color: #eee;
+    background-color: rgb(237, 243, 254);
 }
 
 .dyntab_even {
@@ -87,26 +94,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 .dyntab_clear {
     clear: both;
-}
-
-.dyntab_column0 {
-    text-align: left;
-}
-
-.dyntab_column1 {
-    text-align: center;
-}
-
-.dyntab_column2 {
-    text-align: right;
-}
-
-.dyntab_row > .dyntab_cell {
-    text-align: center;
-}
-
-.dyntab_header > .dyntab_cell {
-    text-align: center;
 }
 
 .dyntab_header > .dyntab_cell {

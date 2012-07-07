@@ -28,6 +28,7 @@ var DynamicTable = function(surface, data){
 
     dt.class_prefix = "dyntab_"; // TODO allow customisable
     dt.min_col_width = 50; // TODO allow customisable
+    dt.col_initial_width = 200; // TODO allow customisable or based on CSS
 
     dt.render(); // render basic table
     dt.add_data(data.data); // add data and save into object
@@ -35,6 +36,74 @@ var DynamicTable = function(surface, data){
 };
 
 DynamicTable.prototype = {
+    get_scrollbar_width: function(){
+        var dt = this;
+
+        // based on MIT-licensed code from: https://raw.github.com/brandonaaron/jquery-getscrollbarwidth/master/jquery.getscrollbarwidth.js
+
+        if ("scrollbar_width" in dt){
+            return dt.scrollbar_width;
+        }
+
+        var scrollbar_width = 0;        
+
+        if ( $.browser.msie ) {
+            var $textarea1 = $('<textarea cols="10" rows="2"></textarea>')
+                    .css({ position: 'absolute', top: -1000, left: -1000 }).appendTo('body'),
+                $textarea2 = $('<textarea cols="10" rows="2" style="overflow: hidden;"></textarea>')
+                    .css({ position: 'absolute', top: -1000, left: -1000 }).appendTo('body');
+            scrollbar_width = $textarea1.width() - $textarea2.width();
+            $textarea1.add($textarea2).remove();
+        } else {
+            var $div = $('<div />')
+                .css({ width: 100, height: 100, overflow: 'auto', position: 'absolute', top: -1000, left: -1000 })
+                .prependTo('body').append('<div />').find('div')
+                    .css({ width: '100%', height: 200 });
+            scrollbar_width = 100 - $div.width();
+            $div.parent().remove();
+        }
+        dt['scrollbar_width'] = scrollbar_width;
+        return scrollbar_width;
+    },
+    get_column: function(uri){
+        var dt = this;
+        // get a column based on its URI or return null
+        returned_column = null;
+        $.each(dt.columns, function(){
+            var column = this;
+            if (column.uri == uri){
+                returned_column = column;
+                return false;
+            }
+        });
+        return returned_column;
+    },
+    re_sort: function(predicate_uri){
+        // TODO finish this, it was half-written at 35000ft and may be nonsense
+        var dt = this;
+        var index = {};
+        $.each(dt.data, function(item_uri, item_data){
+            if (predicate_uri in item_data){
+                var vals = item_data[predicate_uri];
+                $.each(vals, function(){
+                    var val = this.toLowerCase(); // lower case for sorting
+                    if (!(val in index)){
+                        index[val] = [];
+                    }
+                    index[val].push(item_uri);
+                });
+            }
+        });
+        var key_arr = [];
+        $.each(index, function(key, uris){
+            key_arr.push(key);
+        });
+        key_arr = key_arr.sort();
+
+//        $.each(index, function(value
+
+
+    },
     uri_to_cssclass: function(uri){
         var dt = this;
         var prefix = "uri_"; // TODO allow customisable, move to object?
@@ -57,12 +126,18 @@ DynamicTable.prototype = {
         $.each(dt.columns, function(){
             if (prevColumn == null){
                 prevColumn = this;
-                return;
+                return true;
             }
 
             var column = this;
-            var thisCssclass = "."+dt.class_prefix+dt.uri_to_cssclass(column['uri']);
-            var prevCssclass = "."+dt.class_prefix+dt.uri_to_cssclass(prevColumn['uri']);
+
+            if ('resizer' in column && column['resizer']){
+                prevColumn = column;
+                return true; // this column already has a resizer, ignore
+            }
+
+            var thisCssclass = "."+dt.cls(dt.uri_to_cssclass(column['uri']));
+            var prevCssclass = "."+dt.cls(dt.uri_to_cssclass(prevColumn['uri']));
             $(prevCssclass).each(function(){
                 var cell = $(this);
                 var sizer = dt.makediv(["sizer"]);
@@ -91,9 +166,15 @@ DynamicTable.prototype = {
                         $(this).data("origWidth", $(this).width());
                     });
 
+                    // disable text selection while dragging
+                    document.onselectstart = function(){ return false; }
+
                     mouseDown = true;
                 });
                 $(document).mouseup(function(evt){
+                    // re-enable text selection while dragging
+                    document.onselectstart = function(){ return true; }
+
                     mouseDown = false;
                 });
                 $(document).mousemove(function(evt){
@@ -127,10 +208,10 @@ DynamicTable.prototype = {
                         }
 
                         // ensure sizers are the right height now
-                        $("."+dt.class_prefix+"sizer").each(function(){
+                        $("."+dt.cls("sizer")).each(function(){
                             // FIXME duped above 
                             var highest = 0;
-                            $(this).parent().find("."+dt.class_prefix+"cell").each(function(){
+                            $(this).parent().find("."+dt.cls("cell")).each(function(){
                                 var thisheight = $(this).height() + dt.get_extras(this);
                                 if (thisheight > highest){
                                     highest = thisheight;
@@ -143,7 +224,8 @@ DynamicTable.prototype = {
                     }
                 });
             });
-            prevColumn = this;
+            column['resizer'] = true;
+            prevColumn = column;
         });
 
     },
@@ -167,7 +249,7 @@ DynamicTable.prototype = {
             if (class_str.length > 0){
                 class_str += " ";
             }
-            class_str += dt.class_prefix+css_class;
+            class_str += dt.cls(css_class);
         });
 
         return $("<div class='"+class_str+"'></div>");
@@ -186,7 +268,7 @@ DynamicTable.prototype = {
         var rowdiv = dt.row_divs_by_uri[rowuri][0]; // TODO enable multiple rows
 
         var column_counter = 0;
-        rowdiv.children("."+dt.class_prefix+"cell").each(function(){
+        rowdiv.children("."+dt.cls("cell")).each(function(){
             var cell = $(this);
             var property_uri = dt.get_column_uris()[column_counter];
 
@@ -213,7 +295,12 @@ DynamicTable.prototype = {
                     }
                 });
             } else {
-                cell.html("&nbsp;");
+                // not in this data, do nothing
+
+                // but make sure the cell has a non-breaking space at minimum
+                if (cell.html() == ""){
+                    cell.html("&nbsp;");
+                }
             }
 
             ++column_counter;
@@ -229,11 +316,14 @@ DynamicTable.prototype = {
         dt.row_container.append(row_div);
         dt.row_divs_by_uri[uri]  = [row_div];
 
-        var row_cell_width = Math.floor( (row_div.width()) / dt.get_column_uris().length);
+//        var row_cell_width = Math.floor( (row_div.width() - ) / dt.get_column_uris().length);
 
         col_counter = 0;
         $.each(dt.columns, function(){
             var column = this;
+
+            var header_cell = $(dt.container.children("."+dt.cls("header")).children("."+dt.cls("column"+col_counter)));
+            var row_cell_width = header_cell.width() + dt.get_extras(header_cell);
 
             var cell = dt.makediv(["cell","column"+col_counter,dt.uri_to_cssclass(column['uri'])]);
             cell.css("width", row_cell_width);
@@ -247,6 +337,15 @@ DynamicTable.prototype = {
         // clear at each
         row_div.append(dt.makediv(["clear"]));
     },
+    basic_label: function(uri){
+        // generate a label based on a uri. crude.
+        var dt = this;
+        var character = "#";
+        if (uri.indexOf("#") == -1){
+            character = "/";
+        }
+        return uri.substr( uri.lastIndexOf(character)+1 );
+    },
     add_data: function(data){
         var dt = this;
 
@@ -256,13 +355,97 @@ DynamicTable.prototype = {
                 dt.data[uri] = {};
                 dt.add_new_row(uri);
             }
+
+            // check all columns exist
+            $.each(data, function(predicate_uri, vals){
+                var column = dt.get_column(predicate_uri);
+                if (column == null){
+                    dt.add_column(predicate_uri, dt.basic_label(predicate_uri)); // TODO figure out the real label somehow
+                }
+            });
+
+            // add new data to row
             dt.add_data_to_row(uri, data);
         });
+    },
+    cls: function(name){
+        var dt = this;
+        // return the class with this name
+        return dt.class_prefix+name;
+    },
+    add_column: function(predicate_uri, column_label){
+        // add a new column to the table
+        var dt = this;
+
+        var col_width = dt.col_initial_width;
+
+        // add to header
+        var col_counter = dt.columns.length;
+
+        // remove clearing div
+        dt.header.children().each(function(){
+            var div = $(this);
+            if (div.is("."+dt.cls("clear"))){
+                div.remove();
+            }
+        });
+
+        // create new div
+        var header_cell = dt.makediv(["cell","column"+col_counter,dt.uri_to_cssclass(predicate_uri)]);
+        header_cell.css("width", col_width);
+        dt.header.css("width", dt.header.width() + dt.get_extras(dt.header) + col_width);
+        dt.header.append(header_cell);
+
+
+        header_cell.css("width", header_cell.width() - dt.get_extras(header_cell)); // resize once visible
+        header_cell.html(column_label);
+
+        // clear at each
+        dt.header.append(dt.makediv(["clear"]));
+        
+        dt.container.css("width", dt.header.width() + dt.get_extras(dt.header));
+
+        // we dont modify surface, because surface might scroll to the size of container
+//        dt.surface.css("width", dt.header.width() + dt.get_extras(dt.header));
+
+        var column = {'uri': predicate_uri, 'label': column_label};
+        dt.columns.push(column);
+
+        // add a resizer
+        dt.add_resizers();
+
+        // add to existing rows
+        dt.row_container.children().each(function(){
+            // we've added the resizer, so just add a cell here
+            var row_div = $(this);
+
+            // first remove the clear div
+            row_div.children().each(function(){
+                var div = $(this);
+                if (div.is("."+dt.cls("clear"))){
+                    div.remove();
+                }
+            });
+
+            // add the new cell
+            var row_cell_width = col_width;
+
+            col_counter = dt.columns.length - 1; // assume we're the last column, because we were just added
+
+            var cell = dt.makediv(["cell","column"+col_counter,dt.uri_to_cssclass(column['uri'])]);
+            cell.css("width", header_cell.width() + dt.get_extras(header_cell));
+            row_div.append(cell);
+
+            cell.css("width", cell.width() - dt.get_extras(cell)); // resize once visible            
+            // re-add the clear div
+            row_div.append(dt.makediv(["clear"]));
+        });
+
     },
     render: function(){
         var dt = this;
 
-        dt.surface.addClass(dt.class_prefix+"table");
+        dt.surface.addClass(dt.cls("table"));
 
         // create a container
         dt.container = dt.makediv(["container"]);
@@ -276,8 +459,7 @@ DynamicTable.prototype = {
         dt.row_container = dt.makediv(["row_container"]);
         dt.container.append(dt.row_container);
 
-
-        var header_cell_width = Math.floor( (dt.header.width()) / dt.get_column_uris().length);
+        var header_cell_width = Math.floor( (dt.header.width() - dt.get_scrollbar_width() ) / dt.get_column_uris().length);
 
         // add header row
         var col_counter = 0;
