@@ -7,6 +7,8 @@ The table can be updated with information (defined using URIs, and is designed
 to be sources from RDF/Semantic Web/Linked Data) dynamically, and is therefore
 suitable for realtime/updating sources.
 
+(Specifically, DynamicTable aims to operate with LD-JSON as its data source.)
+
 The JavaScript that updates and populates the table checks all CSS to ensure
 that widths/heights/padding/margins etc are respected, so that developers can
 design in CSS, and not have those changes break the table (e.g. setting
