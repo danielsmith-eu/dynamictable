@@ -46,7 +46,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 .dyntab_row_container {
     overflow-y: auto;
-    max-height: 75px;
+/*    max-height: 75px;
+*/
     
 }
 
