@@ -108,9 +108,6 @@ DynamicTable.prototype = {
         var dt = this;
         var sizer = dt.makediv(["sizer"]);
 
-        var sizer_width = sizer.width();
-        cell.css("width", cell.width() - sizer_width);
-
         // FIXME duped below
         var row_height = sizer.parent().height();
         sizer.css("height", row_height);
@@ -179,6 +176,10 @@ DynamicTable.prototype = {
         });
         sizer.insertAfter(cell);
         cell.data("sizer", sizer);
+
+        var sizer_width = sizer.width();
+        cell.css("width", cell.width() - sizer_width);
+
         return sizer;
     },
     uri_to_cssclass: function(uri){
